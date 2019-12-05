@@ -4,6 +4,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const Post = require("./database/models/Post");
+const expressFileUpload = require("express-fileupload");
 
 const app = express();
 
@@ -21,8 +22,13 @@ app.use(bodyParser.json());
 
 app.use(bodyParser.urlencoded({ extended: false }));
 
-app.get("/", (req, res) => {
-  res.render("index");
+app.use(expressFileUpload());
+
+app.get("/", async (req, res) => {
+  const posts = await Post.find();
+  res.render("index", {
+    posts
+  });
 });
 
 app.get("/about", (req, res) => {
@@ -33,18 +39,27 @@ app.get("/contact", (req, res) => {
   res.render("contact");
 });
 
-app.get("/post", (req, res) => {
-  res.render("post");
+app.get("/post/:id", async (req, res) => {
+  const post = await Post.findById(req.params.id, (err, post) => {
+    res.render("post", {
+      post
+    });
+  });
 });
 
-app.get("/post/new", (req, res) => {
+app.get("/posts/new", (req, res) => {
   res.render("create");
 });
 
-app.post("/post/store", (req, res) => {
-  Post.create(req.body, (err, post) => {
-    res.redirect("/");
-  });
+app.post("/posts/store", (req, res) => {
+  const image = req.files.image;
+  if (image) {
+    image.mv(`${__dirname}/public/image/filename.png`, err => {
+      Post.create(req.body, (err, post) => {
+        res.redirect("/");
+      });
+    });
+  }
 });
 
 app.listen(3000, () => {
