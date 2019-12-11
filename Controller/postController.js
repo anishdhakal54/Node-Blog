@@ -1,9 +1,8 @@
 const path = require("path");
 const Post = require("../database/models/Post");
-
 exports.getIndex = async (req, res) => {
   const posts = await Post.find({});
-  console.log(posts);
+  // console.log(posts);
   res.render("index", {
     posts
   });
