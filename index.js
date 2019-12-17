@@ -8,6 +8,7 @@ const fileUpload = require("express-fileupload");
 const Post = require("./database/models/Post");
 
 const blogRoutes = require("./routes/blogRoutes");
+const userRoutes = require("./routes/userRoutes");
 const app = new express();
 
 mongoose.connect("mongodb://localhost/node-js-blog", {
@@ -24,6 +25,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(blogRoutes);
+app.use(userRoutes);
 app.listen(3000, () => {
   console.log("App listening on port 3000");
 });
