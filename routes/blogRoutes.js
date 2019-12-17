@@ -11,8 +11,6 @@ router.post(
   postController.postStore
 );
 
-router.get("/about", postController.getAbout);
-
 router.get("/post/:id", postController.getBlog);
 
 router.get("/contact", postController.getContact);

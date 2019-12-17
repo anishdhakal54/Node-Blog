@@ -1,15 +1,36 @@
 const path = require("path");
 const expressEdge = require("express-edge");
 const express = require("express");
+const passport = require("passport");
+const localStrategy = require("passport-local");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const fileUpload = require("express-fileupload");
+const expressSessions = require("express-session");
+const app = new express();
+const User = require("./database/models/User.js");
 
-const Post = require("./database/models/Post");
+app.use(
+  expressSessions({
+    secret: "i am batman",
+    resave: false,
+    saveUninitialized: true
+  })
+);
+
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new localStrategy(User.authenticate()));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
 
 const blogRoutes = require("./routes/blogRoutes");
 const userRoutes = require("./routes/userRoutes");
-const app = new express();
+
+app.use((req, res, next) => {
+  res.locals.user = req.user;
+  next();
+});
 
 mongoose.connect("mongodb://localhost/node-js-blog", {
   useNewUrlParser: true,

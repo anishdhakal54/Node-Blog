@@ -8,7 +8,10 @@ exports.getIndex = async (req, res) => {
   });
 };
 exports.getCreate = (req, res) => {
-  res.render("create");
+  if (req.user) {
+    res.render("create");
+  }
+  res.redirect("/users/login");
 };
 
 exports.postStore = (req, res) => {
@@ -25,10 +28,6 @@ exports.postStore = (req, res) => {
       }
     );
   });
-};
-
-exports.getAbout = (req, res) => {
-  res.render("about");
 };
 
 exports.getBlog = async (req, res) => {
