@@ -1,26 +1,38 @@
-const path = require("path");
 const expressEdge = require("express-edge");
-const express = require("express");
+const Express = require("express");
 const passport = require("passport");
-const localStrategy = require("passport-local");
+const LocalStrategy = require("passport-local");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const fileUpload = require("express-fileupload");
+const ConnectMongo = require("connect-mongo");
 const expressSessions = require("express-session");
-const app = new express();
+
+const app = new Express();
+
+mongoose.connect("mongodb://localhost/node-js-blog", {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+});
+
 const User = require("./database/models/User.js");
+
+const MongoStore = ConnectMongo(expressSessions());
 
 app.use(
   expressSessions({
     secret: "i am batman",
     resave: false,
-    saveUninitialized: true
+    saveUninitialized: true,
+    store: new MongoStore({
+      mongooseConnection: mongoose.connection
+    })
   })
 );
 
 app.use(passport.initialize());
 app.use(passport.session());
-passport.use(new localStrategy(User.authenticate()));
+passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
@@ -28,17 +40,12 @@ const blogRoutes = require("./routes/blogRoutes");
 const userRoutes = require("./routes/userRoutes");
 
 app.use((req, res, next) => {
-  res.locals.user = req.user;
+  res.locals.currentUser = req.user;
   next();
 });
 
-mongoose.connect("mongodb://localhost/node-js-blog", {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-});
-
 app.use(fileUpload());
-app.use(express.static("public"));
+app.use(Express.static("public"));
 app.use(expressEdge);
 app.set("views", `${__dirname}/views`);
 

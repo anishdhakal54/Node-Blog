@@ -9,7 +9,7 @@ exports.getIndex = async (req, res) => {
 };
 exports.getCreate = (req, res) => {
   if (req.user) {
-    res.render("create");
+    return res.render("create");
   }
   res.redirect("/users/login");
 };

@@ -1,3 +1,4 @@
 {
-  "ejs": false
+  "ejs": false,
+  "singleQuote": false
 }
